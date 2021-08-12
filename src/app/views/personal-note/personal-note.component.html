@@ -1,0 +1,244 @@
+<form [formGroup]="personalNoteForm">
+
+  <input type="hidden" formControlName="id" class="form-control" id="id">
+
+  <div class="animated fadeIn">
+    <div class="row">
+      <div class="col-sm-12">
+
+        <div class="card" [hidden]="isHidePersonalNoteEntry">
+
+          <div class="card-header">
+            <div class="form-group row">
+              <div class="col-md-6">
+                <div class="text-left">
+                  <strong>Personal Note</strong>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="text-right">
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onShowPersonalNoteList()"><i class="fa icon-list"></i>&nbsp;Personal Notes List</button>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <label for="categoryId">Category</label>
+                  <select class="form-control" id="categoryId" formControlName="categoryId"
+                          [ngClass]="{'is-invalid': submitted && frm.categoryId.errors}" >
+                    <option value="">-Select Category-</option>
+                    <option *ngFor="let category of categoryList" [value]="category.id">{{category.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && frm.categoryId.errors" class="invalid-feedback">
+                    <div *ngIf="frm.categoryId.errors.required">Category required.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <label for="title">Title *</label>
+                  <input type="text" formControlName="title" class="form-control"
+                         [ngClass]="{'is-invalid': submitted && frm.title.errors}" id="title" placeholder="Enter Title">
+                  <div *ngIf="submitted && frm.title.errors" class="invalid-feedback">
+                    <div *ngIf="frm.title.errors.required">Title required.</div>
+                    <div *ngIf="frm.title.errors.minlength">Title must be at least 4 characters.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <label for="content">Content</label>
+                  <textarea id="content" formControlName="content" rows="3" class="form-control" placeholder="Enter Content.."></textarea>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <div class="text-left">
+                    <button type="button" class="btn btn-sm btn-primary" (click)="onSaveModal()"><i class="fa fa-dot-circle-o"></i> Save</button>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-danger" (click)="onReset()"><i class="fa fa-ban"></i> Reset</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div bsModal #warningModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-warning" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">!!! SAVE/UPDATE !!!</h4>
+                <button type="button" class="close" (click)="warningModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Changes will be submitted for save. Are you sure to continue?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="warningModal.hide()">Close</button>
+                <button type="button" class="btn btn-warning" (click)="onSaveSubmit()">Submit</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <div bsModal #dangerModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-danger" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">!!! DELETE !!!</h4>
+                <button type="button" class="close" (click)="dangerModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Selected Personal Note will be deleted permanently. Are you sure to continue?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="dangerModal.hide()">Close</button>
+                <button type="button" class="btn btn-danger" (click)="onDeleteSubmit()">Submit</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <div bsModal #infoModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-info" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Details: Personal Note</h4>
+                <button type="button" class="close" (click)="infoModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <!--<p>One fine body&hellip;</p>-->
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="title"><b>Category</b></label>
+                    <input type="text" formControlName="vwCategory" class="form-control" id="vwCategory" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="title"><b>Title</b></label>
+                    <input type="text" formControlName="vwTitle" class="form-control" id="vwTitle" readonly>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="title"><b>Content</b></label>
+                    <textarea id="vwContent" formControlName="vwContent" rows="3" class="form-control" readonly></textarea>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="title"><b>Updated Date (latest)</b></label>
+                    <input type="text" formControlName="vwLastUpdatedAsString" class="form-control" id="vwLastUpdatedAsString" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="infoModal.hide()">Close</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <div class="card" [hidden]="isHidePersonalNoteList">
+          <div class="card-header">
+            <!--<strong>Personal Note List</strong>-->
+            <div class="form-group row">
+              <div class="col-md-6">
+                <div class="text-left">
+                  <strong>Personal Note List</strong>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="text-right">
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onRedirectToCategory()"><i class="fa icon-settings"></i>&nbsp;Manage Categories >></button>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <div class="form-group row">
+              <div class="col-md-3">
+                <label for="scNoteUpdatedDate">Date</label>
+                <input type="date" class="form-control" id="scNoteUpdatedDate" formControlName="scNoteUpdatedDate" placeholder="Note Date">
+              </div>
+              <div class="col-md-3">
+                <label for="scCategoryId">Category</label>
+                <select class="form-control" id="scCategoryId" formControlName="scCategoryId">
+                  <option value="">-Select Category-</option>
+                  <option *ngFor="let category of categoryList" [value]="category.id">{{category.name}}</option>
+                </select>
+
+              </div>
+              <div class="col-md-3">
+                <label for="scTitle">Title</label>
+                <input type="text" formControlName="scTitle" class="form-control" id="scTitle" placeholder="Enter Title">
+              </div>
+              <div class="col-md-3">
+                <label for="scContent">Content</label>
+                <input type="text" formControlName="scContent" class="form-control" id="scContent" placeholder="Enter Content">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-md-6">
+                <div class="text-left">
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onSearchFilter()"><i class="fa fa-search"></i> Search</button>&nbsp;&nbsp;
+                  <button type="button" class="btn btn-sm btn-danger" (click)="onSearchReset()"><i class="fa fa-ban"></i> Reset</button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="text-right">
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onShowPersonalNoteEntry()"><i class="fa icon-plus"></i>&nbsp;Personal Note</button>&nbsp;&nbsp;
+                </div>
+              </div>
+            </div>
+
+            <table class="table table-bordered table-striped table-sm">
+              <thead>
+                <th width="5%">S/N</th>
+                <th hidden>Category ID</th>
+                <th width="10%">Category</th>
+                <th width="15%">Title</th>
+                <th width="25%">Content</th>
+                <th width="20%">Updated Date (latest)</th>
+                <th colspan="3" width="25%" class="text-center">Action</th>
+                <!--<th>Delete</th>-->
+              </thead>
+              <tr *ngFor="let personalNote of list; let i = index">
+                <td>{{i + 1}}</td>
+                <td hidden>{{personalNote.categoryId}}</td>
+                <td>{{personalNote.categoryName}}</td>
+                <td>{{personalNote.title}}</td>
+                <td>{{personalNote.content}}</td>
+                <td>{{personalNote.lastUpdatedAsString}}</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onViewDetails(personalNote)"><i class="fa icon-book-open"></i>&nbsp;Details</button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="onSelect(personalNote)"><i class="fa icon-pencil"></i>&nbsp;Edit</button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-danger" (click)="onDeleteModal(personalNote)"><i class="fa icon-minus"></i>&nbsp;Delete</button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div><!--/.col-->
+    </div><!--/.row-->
+  </div>
+</form>
